@@ -10,5 +10,10 @@ connectDB()
 
 app.use('/api/bootcamps', bootcamps)
 
-app.listen(process.env.PORT, console.log("Server Live"))
+const server = app.listen(process.env.PORT, console.log("Server Live"))
+
+process.on('unhandledRejection', (err) => {
+    console.log(`Error: ${err.message}`)
+    server.close(() => process.exit(1))
+})
 
