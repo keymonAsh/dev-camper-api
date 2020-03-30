@@ -28,11 +28,9 @@ exports.createBootcamp = async (req, res, next) => {
 exports.showBootcamp = async (req, res, next) => {
     try {
         const bootcamp = await Bootcamp.findById(req.params.id)
-
         if(!bootcamp) {
             return  res.status(400).json({success: false})
         }
-
         res.status(200).json({
             success: true,
             data: bootcamp
@@ -42,10 +40,32 @@ exports.showBootcamp = async (req, res, next) => {
     }
 }
 
-exports.updateBootcamp = (req, res, next) => {
-    res.status(200).json({ success: true })
+exports.updateBootcamp = async (req, res, next) => {
+    try {
+        const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        })
+        if(!bootcamp) {
+            return res.status(400).json({success: false})
+        }
+        res.status(200).json({
+            success: true,
+            data: bootcamp
+        })
+    } catch (err) {
+        res.status(400).json({success: false})
+    }
 }
 
-exports.deleteBootcamp = (req, res, next) => {
-    res.status(200).json({ success: true })
+exports.deleteBootcamp = async (req, res, next) => {
+    try {
+        const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
+        if(!bootcamp) {
+            return res.status(400).json({success: false})
+        }
+        res.status(200).json({success: true})
+    } catch (err) {
+        res.status(400).json({success: false})
+    }
 }
