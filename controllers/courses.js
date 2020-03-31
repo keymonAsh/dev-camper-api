@@ -1,6 +1,7 @@
 const ErrorResponse = require('../utils/errorResponse')
 const asyncHandler = require('../middleware/asyncHandeler')
 const Course = require('../models/coures')
+const Bootcamp = require('../models/bootcamp')
 
 exports.getCourses = asyncHandler(async (req, res, next) => {
     let query
@@ -35,13 +36,12 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 })
 
 exports.createCourse = asyncHandler(async (req, res, next) => {
-    const course = await (await Course.findById(req.params.id)).populate({
-        path:  'bootcamp',
-        select: 'name description'
-    })
-    if(!course) {
+    req.body.bootcamp = req.params.bootcampId
+    const bootcamp = await Bootcamp.findById(req.params.bootcampId)
+    if(!bootcamp) {
         return next(new ErrorResponse(`No course with ID of ${req.params.id}`, 404))
     }
+    const course = await Course.create(req.body)
     res.status(200).json({
         success: true,
         data: course
