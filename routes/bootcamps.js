@@ -8,11 +8,14 @@ const {
     deleteBootcamp
 } = require('../controllers/bootcamps')
 
+const Bootcamp = require('../models/bootcamp')
+const advancedResults = require('../middleware/advancedResults')
+
 const courseRouter = require('./courses')
 router.use('/:bootcampId/courses', courseRouter)
 
 router.route('/')
-.get(getBootcamps)
+.get(advancedResults(Bootcamp, 'courses') , getBootcamps)
 .post(createBootcamp)
 
 router.route('/:id')
