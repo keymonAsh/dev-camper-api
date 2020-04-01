@@ -10,11 +10,11 @@ exports.register = asyncHandler(async (req, res, next) => {
         email,
         role
     })
-    const token = user.getSignedJwtToken()
-    res.status(200).json({
-        success: true,
-        token
-    })
+    sendTokenResponse(user, 200, res)
+    // res.status(statuscode).cookie('token', token, options).json({
+    //     success: true,
+    //     token
+    // })
 })
 
 exports.login = asyncHandler(async (req, res, next) => {
@@ -30,7 +30,21 @@ exports.login = asyncHandler(async (req, res, next) => {
     if(!isMatch) {
         next(new ErrorResponse('Invalid Credentials', 401))
     }
-    const token = user.getSignedJwtToken()
-    res.status(200).json({ success: true, token });
+    sendTokenResponse(user, 200, res)
+    // res.status(statuscode).cookie('token', token, options).json({
+    //     success: true,
+    //     token
+    // })
 })
 
+const sendTokenResponse = (user, statuscode, res) => {
+    const token = user.getSignedJwtToken()
+    const options = {
+        expires: new Date(Date.now + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+        httpOnly: true
+    }
+    res.status(statuscode).cookie('token', token, options).json({
+        success: true,
+        token
+    })
+}
