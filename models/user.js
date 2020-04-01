@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a password'],
         minlength: 6,
+        select: false
     }, 
     resetPasswordToken: String,
     resetPasswordExpire: Date,
@@ -44,6 +45,10 @@ userSchema.methods.getSignedJwtToken = function() {
     return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
     })
+}
+
+userSchema.methods.matchPassword = async function(enterPassword) {
+    return await bcrypt.compare(enterPassword, this.password)
 }
 
 module.exports = mongoose.model('User', userSchema)
